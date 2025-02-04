@@ -14,7 +14,8 @@ app.use(express.json());
 const corsOptions = {
   origin: 'https://projeto-final-venda-livros-4965b9298fbe.herokuapp.com', // Permitir apenas a origem do seu front-end
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'] // Cabeçalhos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+  optionsSuccessStatus: 200 // Responder com status 200 às requisições de preflight
 };
 app.use(cors(corsOptions));
 
