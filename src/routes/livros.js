@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const autenticarJWT = require('../middleware/autenticacao');
+const autenticarJWT = require('../middlewares/autenticacao'); // Verifique se o caminho está correto
 
 /**
  * @swagger
@@ -115,9 +115,3 @@ router.get('/:id', autenticarJWT, (req, res) => {
 });
 
 module.exports = router;
-
-router.post('/', autenticarJWT, (req, res) => {
-  const novoLivro = { titulo: req.body.titulo };
-  res.status(201).json(novoLivro);
-});
-

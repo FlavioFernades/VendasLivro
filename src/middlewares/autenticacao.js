@@ -13,4 +13,4 @@ const autenticarJWT = (req, res, next) => {
   }
 };
 
-module.exports = { autenticarJWT };
+module.exports = autenticarJWT;
