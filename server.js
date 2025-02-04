@@ -2,12 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
-const path = require('path'); // Adicionar o módulo path
+const path = require('path');
+const cors = require('cors'); // Adicionar o módulo cors
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors()); // Adicionar o middleware cors
 
 const PORT = process.env.PORT || 3000;
 
