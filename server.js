@@ -1,6 +1,5 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -25,20 +24,6 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// Middleware de autenticação
-const autenticarJWT = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(403).send('Token não fornecido.');
-
-  try {
-    const dados = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = dados;
-    next();
-  } catch {
-    res.status(403).send('Token inválido.');
-  }
-};
 
 // Rota de login
 app.post('/login', (req, res) => {
@@ -65,5 +50,3 @@ app.use('/livros', livrosRouter);
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-module.exports = { autenticarJWT };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { autenticarJWT } = require('../../server'); // Ajuste o caminho conforme necessário
+const { autenticarJWT } = require('../middlewares/autenticacao');
+
 
 
 /**
