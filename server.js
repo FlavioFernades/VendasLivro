@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path'); // Adicionar o módulo path
 
 dotenv.config();
 
@@ -25,6 +26,21 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+// Middleware de autenticação
+const jwt = require('jsonwebtoken');
+const autenticarJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(403).send('Token não fornecido.');
+
+  try {
+    const dados = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = dados;
+    next();
+  } catch {
+    res.status(403).send('Token inválido.');
+  }
+};
+
 // Rota de login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
@@ -38,9 +54,12 @@ app.post('/login', (req, res) => {
   res.status(401).send('Credenciais inválidas.');
 });
 
+// Servir arquivos estáticos da pasta raiz
+app.use(express.static(path.join(__dirname)));
+
 // Rota básica para verificar se o servidor está funcionando
 app.get('/', (req, res) => {
-  res.send('Bem-vindo à API de Venda de Livros!');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Rotas
