@@ -13,17 +13,25 @@
     let token = '';
 
     document.getElementById('loginBtn').addEventListener('click', async () => {
+      console.log('Login button clicked');
       const response = await fetch('https://projeto-final-venda-livros.herokuapp.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'admin@livraria.com', password: '123456' }),
       });
-      const data = await response.json();
-      token = data.token;
-      console.log('Token recebido:', token);
+      if (response.ok) {
+        const data = await response.json();
+        token = data.token;
+        console.log('Token recebido:', token);
+        alert('Login realizado com sucesso!');
+      } else {
+        console.error('Erro no login:', response.statusText);
+        alert('Erro no login. Verifique as credenciais.');
+      }
     });
 
     document.getElementById('getLivrosBtn').addEventListener('click', async () => {
+      console.log('Get Livros button clicked');
       if (!token) {
         alert('Faça login primeiro!');
         return;
@@ -31,8 +39,14 @@
       const response = await fetch('https://projeto-final-venda-livros.herokuapp.com/livros', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const livros = await response.json();
-      console.log(livros);
+      if (response.ok) {
+        const livros = await response.json();
+        console.log(livros);
+        alert('Livros obtidos com sucesso! Verifique o console para mais detalhes.');
+      } else {
+        console.error('Erro ao obter livros:', response.statusText);
+        alert('Erro ao obter livros.');
+      }
     });
   </script>
 </body>
