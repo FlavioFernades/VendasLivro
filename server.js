@@ -19,6 +19,12 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Middleware para log de requisições
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // Responder a preflight requests
 app.options('*', cors(corsOptions));
 
