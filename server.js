@@ -10,13 +10,16 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Configurar CORS
+// Configurar CORS para aceitar requisições da origem específica
 const corsOptions = {
-  origin: '*', // Permitir todas as origens (ajuste conforme necessário)
+  origin: 'https://projeto-final-venda-livros-4965b9298fbe.herokuapp.com', // Permitir apenas a origem do seu front-end
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'] // Cabeçalhos permitidos
 };
 app.use(cors(corsOptions));
+
+// Responder a preflight requests
+app.options('*', cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 
