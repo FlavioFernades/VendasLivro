@@ -15,9 +15,15 @@ const corsOptions = {
   origin: 'https://projeto-final-venda-livros-4965b9298fbe.herokuapp.com', // Permitir apenas a origem do seu front-end
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-  optionsSuccessStatus: 200 // Responder com status 200 às requisições de preflight
+  optionsSuccessStatus: 204 // Responder com status 204 às requisições de preflight
 };
 app.use(cors(corsOptions));
+
+// Middleware para log de requisições
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 // Responder a preflight requests
 app.options('*', cors(corsOptions));
