@@ -29,3 +29,9 @@ router.post('/', (req, res) => {
 });
 
 module.exports = router;
+
+router.post('/', autenticarJWT, (req, res) => {
+  const novoLivro = { titulo: req.body.titulo };
+  res.status(201).json(novoLivro);
+});
+

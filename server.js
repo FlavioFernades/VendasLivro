@@ -60,3 +60,28 @@ app.use('/livros', livrosRouter);
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  // Simulação de validação (substituir pelo banco em casos reais)
+  if (email === 'admin@livraria.com' && password === '123456') {
+    const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return res.json({ token });
+  }
+
+  res.status(401).send('Credenciais inválidas.');
+});
+
+const autenticarJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(403).send('Token não fornecido.');
+
+  try {
+    const dados = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = dados; // Informações do usuário autenticado
+    next();
+  } catch {
+    res.status(403).send('Token inválido.');
+  }
+};
