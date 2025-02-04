@@ -53,6 +53,11 @@ app.post('/login', (req, res) => {
   res.status(401).send('Credenciais inválidas.');
 });
 
+// Rota básica para verificar se o servidor está funcionando
+app.get('/', (req, res) => {
+  res.send('Bem-vindo à API de Venda de Livros!');
+});
+
 // Rotas
 const livrosRouter = require('./src/routes/livros');
 app.use('/livros', livrosRouter);
@@ -60,3 +65,5 @@ app.use('/livros', livrosRouter);
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+module.exports = { autenticarJWT };
