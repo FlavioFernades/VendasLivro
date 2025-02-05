@@ -7,7 +7,7 @@ Clone o repositório:
 bash
 Copy
 
-   git clone https://github.com/seuRepositorio/projeto-final-venda-livros.git
+   git clone https://github.com/RParadeda/projeto-final-venda-livros.git
    cd projeto-final-venda-livros
 Instale as dependências:
 bash
