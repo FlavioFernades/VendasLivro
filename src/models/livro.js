@@ -1,15 +1,20 @@
-  const { Sequelize, DataTypes } = require('sequelize');
-  const sequelize = new Sequelize(process.env.DATABASE_URL);
-
-  const Livro = sequelize.define('Livro', {
+module.exports = (sequelize, DataTypes) => {
+  return sequelize.define('Livro', {
     titulo: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: false
     },
+    autor: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    ano: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    preco: {
+      type: DataTypes.DECIMAL,
+      allowNull: false
+    }
   });
-
-  (async () => {
-    await sequelize.sync();
-  })();
-
-  module.exports = Livro;
+};

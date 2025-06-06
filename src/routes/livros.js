@@ -1,65 +1,125 @@
 const express = require('express');
 const router = express.Router();
-const { Livro } = require('../models'); // ajuste o caminho conforme sua estrutura
+const livroController = require('../controllers/livroController');
 
-// GET todos os livros (exemplo já deve existir)
-router.get('/', async (req, res) => {
-  try {
-    const livros = await Livro.findAll();
-    res.json(livros);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar livros' });
-  }
-});
+/**
+ * @swagger
+ * /livros:
+ *   get:
+ *     summary: Lista todos os livros
+ *     tags: [Livros]
+ *     responses:
+ *       200:
+ *         description: Lista de livros retornada com sucesso
+ */
+router.get('/', livroController.listarLivros);
 
-// POST - Criar um novo livro
-router.post('/', async (req, res) => {
-  const { titulo, autor, ano, preco } = req.body;
-  try {
-    const novoLivro = await Livro.create({ titulo, autor, ano, preco });
-    res.status(201).json(novoLivro);
-  } catch (error) {
-    res.status(400).json({ error: 'Erro ao criar livro', detalhes: error.message });
-  }
-});
+/**
+ * @swagger
+ * /livros/{id}:
+ *   get:
+ *     summary: Retorna um livro pelo ID
+ *     tags: [Livros]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Livro encontrado
+ *       404:
+ *         description: Livro não encontrado
+ */
+router.get('/:id', livroController.buscarLivroPorId);
 
-// PUT - Atualizar um livro pelo ID
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const { titulo, autor, ano, preco } = req.body;
+/**
+ * @swagger
+ * /livros:
+ *   post:
+ *     summary: Cria um novo livro
+ *     tags: [Livros]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - titulo
+ *               - autor
+ *               - preco
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               autor:
+ *                 type: string
+ *               preco:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Livro criado com sucesso
+ *       400:
+ *         description: Dados inválidos
+ */
+router.post('/', livroController.criarLivro);
 
-  try {
-    const livro = await Livro.findByPk(id);
-    if (!livro) {
-      return res.status(404).json({ error: 'Livro não encontrado' });
-    }
+/**
+ * @swagger
+ * /livros/{id}:
+ *   put:
+ *     summary: Atualiza um livro existente
+ *     tags: [Livros]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - titulo
+ *               - autor
+ *               - preco
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *               autor:
+ *                 type: string
+ *               preco:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Livro atualizado com sucesso
+ *       404:
+ *         description: Livro não encontrado
+ */
+router.put('/:id', livroController.atualizarLivro);
 
-    livro.titulo = titulo ?? livro.titulo;
-    livro.autor = autor ?? livro.autor;
-    livro.ano = ano ?? livro.ano;
-    livro.preco = preco ?? livro.preco;
-
-    await livro.save();
-    res.json(livro);
-  } catch (error) {
-    res.status(400).json({ error: 'Erro ao atualizar livro', detalhes: error.message });
-  }
-});
-
-// DELETE - Remover um livro pelo ID
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const livro = await Livro.findByPk(id);
-    if (!livro) {
-      return res.status(404).json({ error: 'Livro não encontrado' });
-    }
-
-    await livro.destroy();
-    res.status(204).send(); // sem conteúdo
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao deletar livro', detalhes: error.message });
-  }
-});
+/**
+ * @swagger
+ * /livros/{id}:
+ *   delete:
+ *     summary: Exclui um livro pelo ID
+ *     tags: [Livros]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Livro excluído com sucesso
+ *       404:
+ *         description: Livro não encontrado
+ */
+router.delete('/:id', livroController.deletarLivro);
 
 module.exports = router;
