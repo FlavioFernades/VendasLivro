@@ -1,116 +1,64 @@
 const express = require('express');
 const router = express.Router();
-const autenticarJWT = require('../middlewares/autenticacao'); // Verifique se o caminho está correto
+const { Livro } = require('../models'); // ajuste o caminho conforme sua estrutura
 
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
-
-/**
- * @swagger
- * tags:
- *   name: Livros
- *   description: Gestão de livros
- */
-
-/**
- * @swagger
- * /livros:
- *   get:
- *     summary: Retorna a lista de livros
- *     tags: [Livros]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de livros
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: ID do livro
- *                   titulo:
- *                     type: string
- *                     description: Título do livro
- *                   autor:
- *                     type: string
- *                     description: Autor do livro
- *                   preco:
- *                     type: number
- *                     description: Preço do livro
- *       401:
- *         description: Token não fornecido ou inválido
- */
-router.get('/', autenticarJWT, (req, res) => {
-  // Lógica para retornar a lista de livros
-  res.json([
-    { id: 1, titulo: 'Livro A', autor: 'Autor A', preco: 29.90 },
-    { id: 2, titulo: 'Livro B', autor: 'Autor B', preco: 39.90 },
-  ]);
+// GET todos os livros (exemplo já deve existir)
+router.get('/', async (req, res) => {
+  try {
+    const livros = await Livro.findAll();
+    res.json(livros);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar livros' });
+  }
 });
 
-/**
- * @swagger
- * /livros/{id}:
- *   get:
- *     summary: Retorna um livro específico pelo ID
- *     tags: [Livros]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID do livro
- *     responses:
- *       200:
- *         description: Livro encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   description: ID do livro
- *                 titulo:
- *                   type: string
- *                   description: Título do livro
- *                 autor:
- *                   type: string
- *                   description: Autor do livro
- *                 preco:
- *                   type: number
- *                   description: Preço do livro
- *       401:
- *         description: Token não fornecido ou inválido
- *       404:
- *         description: Livro não encontrado
- */
-router.get('/:id', autenticarJWT, (req, res) => {
-  // Lógica para retornar um livro específico pelo ID
-  const livros = [
-    { id: 1, titulo: 'Livro A', autor: 'Autor A', preco: 29.90 },
-    { id: 2, titulo: 'Livro B', autor: 'Autor B', preco: 39.90 },
-  ];
-  const livro = livros.find(l => l.id === parseInt(req.params.id));
-  if (livro) {
+// POST - Criar um novo livro
+router.post('/', async (req, res) => {
+  const { titulo, autor, ano, preco } = req.body;
+  try {
+    const novoLivro = await Livro.create({ titulo, autor, ano, preco });
+    res.status(201).json(novoLivro);
+  } catch (error) {
+    res.status(400).json({ error: 'Erro ao criar livro', detalhes: error.message });
+  }
+});
+
+// PUT - Atualizar um livro pelo ID
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { titulo, autor, ano, preco } = req.body;
+
+  try {
+    const livro = await Livro.findByPk(id);
+    if (!livro) {
+      return res.status(404).json({ error: 'Livro não encontrado' });
+    }
+
+    livro.titulo = titulo ?? livro.titulo;
+    livro.autor = autor ?? livro.autor;
+    livro.ano = ano ?? livro.ano;
+    livro.preco = preco ?? livro.preco;
+
+    await livro.save();
     res.json(livro);
-  } else {
-    res.status(404).send('Livro não encontrado');
+  } catch (error) {
+    res.status(400).json({ error: 'Erro ao atualizar livro', detalhes: error.message });
+  }
+});
+
+// DELETE - Remover um livro pelo ID
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const livro = await Livro.findByPk(id);
+    if (!livro) {
+      return res.status(404).json({ error: 'Livro não encontrado' });
+    }
+
+    await livro.destroy();
+    res.status(204).send(); // sem conteúdo
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar livro', detalhes: error.message });
   }
 });
 
