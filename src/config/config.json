@@ -1,9 +1,1 @@
-{
-  "development": {
-    "username": "root",
-    "password": "xp1xrp2S*",
-    "database": "livraria_db",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  }
-}
+
