@@ -1,11 +1,17 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const config = require('../config/config.json')['development'];
 
-const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-const db = {};
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-db.Livro = require('./livro')(sequelize, DataTypes);
+const { Sequelize } = require('sequelize');
 
-module.exports = db;
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
+    host: process.env.DB_HOST,  // não 'localhost' nem '127.0.0.1' se estiver em container diferente
+    dialect: 'mysql',
+    port: process.env.DB_PORT || 3306,
+  }
+);
+
+module.exports = { sequelize };
+
