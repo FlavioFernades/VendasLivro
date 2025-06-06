@@ -1,125 +1,56 @@
 const express = require('express');
 const router = express.Router();
-const livroController = require('../controllers/livroController');
+const { Livro } = require('../models');
 
-/**
- * @swagger
- * /livros:
- *   get:
- *     summary: Lista todos os livros
- *     tags: [Livros]
- *     responses:
- *       200:
- *         description: Lista de livros retornada com sucesso
- */
-router.get('/', livroController.listarLivros);
+// GET - Listar todos
+router.get('/', async (req, res) => {
+  const livros = await Livro.findAll();
+  res.json(livros);
+});
 
-/**
- * @swagger
- * /livros/{id}:
- *   get:
- *     summary: Retorna um livro pelo ID
- *     tags: [Livros]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Livro encontrado
- *       404:
- *         description: Livro não encontrado
- */
-router.get('/:id', livroController.buscarLivroPorId);
+// POST - Criar novo livro
+router.post('/', async (req, res) => {
+  try {
+    const { titulo, autor, ano, preco } = req.body;
+    if (!titulo || !autor || !ano || !preco) {
+      return res.status(400).json({ erro: 'Campos obrigatórios não informados.' });
+    }
 
-/**
- * @swagger
- * /livros:
- *   post:
- *     summary: Cria um novo livro
- *     tags: [Livros]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - titulo
- *               - autor
- *               - preco
- *             properties:
- *               titulo:
- *                 type: string
- *               autor:
- *                 type: string
- *               preco:
- *                 type: number
- *     responses:
- *       201:
- *         description: Livro criado com sucesso
- *       400:
- *         description: Dados inválidos
- */
-router.post('/', livroController.criarLivro);
+    const novoLivro = await Livro.create({ titulo, autor, ano, preco });
+    res.status(201).json(novoLivro);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao criar livro.' });
+  }
+});
 
-/**
- * @swagger
- * /livros/{id}:
- *   put:
- *     summary: Atualiza um livro existente
- *     tags: [Livros]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - titulo
- *               - autor
- *               - preco
- *             properties:
- *               titulo:
- *                 type: string
- *               autor:
- *                 type: string
- *               preco:
- *                 type: number
- *     responses:
- *       200:
- *         description: Livro atualizado com sucesso
- *       404:
- *         description: Livro não encontrado
- */
-router.put('/:id', livroController.atualizarLivro);
+// PUT - Atualizar livro
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, autor, ano, preco } = req.body;
 
-/**
- * @swagger
- * /livros/{id}:
- *   delete:
- *     summary: Exclui um livro pelo ID
- *     tags: [Livros]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Livro excluído com sucesso
- *       404:
- *         description: Livro não encontrado
- */
-router.delete('/:id', livroController.deletarLivro);
+    const livro = await Livro.findByPk(id);
+    if (!livro) return res.status(404).json({ erro: 'Livro não encontrado.' });
+
+    await livro.update({ titulo, autor, ano, preco });
+    res.json(livro);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar livro.' });
+  }
+});
+
+// DELETE - Excluir livro
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const livro = await Livro.findByPk(id);
+    if (!livro) return res.status(404).json({ erro: 'Livro não encontrado.' });
+
+    await livro.destroy();
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao excluir livro.' });
+  }
+});
 
 module.exports = router;
