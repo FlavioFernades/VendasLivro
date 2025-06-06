@@ -1,1 +1,11 @@
 
+{
+  "development": {
+    "username": "usuario_do_railway",
+    "password": "senha_do_railway",
+    "database": "nome_do_banco",
+    "host": "host_do_railway", 
+    "dialect": "mysql",
+    "port": 3306
+  }
+}
