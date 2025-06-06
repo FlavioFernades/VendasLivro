@@ -1,7 +1,7 @@
 
 {
   "development": {
-    "host": "mysql://root:pNEuOjjfXvDHndkkwxNndYnJkxdyXoJd@mysql.railway.internal:3306/railway", 
+    "host": "mysql://root:pNEuOjjfXvDHndkkwxNndYnJkxdyXoJd@trolley.proxy.rlwy.net:15233/railway", 
     "dialect": "mysql",
     "port": 3306
   }
